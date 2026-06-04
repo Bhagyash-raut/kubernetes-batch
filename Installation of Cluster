@@ -1,4 +1,4 @@
-**Prerequisites**
+# Prerequisites
 Before creating an EKS cluster, ensure you have:
 1. AWS Account
 An active AWS account with permissions to create:
