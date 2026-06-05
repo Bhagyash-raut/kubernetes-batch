@@ -11,7 +11,7 @@ An active AWS account with permissions to create:
 2. Install AWS CLI
 Amazon Linux
 
-sudo yum install -y awscli-----aws --version
+sudo yum install -y awscli     -----             aws --version
 
 3. Configure AWS CLI
 
@@ -36,13 +36,13 @@ kubectl version --client
 
 5. Install eksctl
 eksctl is the easiest way to create EKS clusters.
+
 Amazon Linux
 
-curl --silent --location \
-"https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" \
-| tar xz -C /tmp
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 
 sudo mv /tmp/eksctl /usr/local/bin
+
 Verify
 
 eksctl version
@@ -50,35 +50,18 @@ eksctl version
 Create EKS Cluster
 Basic Cluster Creation
 
-eksctl create cluster \
-  --name my-cluster \
-  --region us-west-2 \
-  --nodegroup-name my-nodes \
-  --node-type c7i-flex.large \
-  --nodes 2 \
-  --nodes-min 1 \
-  --nodes-max 2 \
-  --managed
+eksctl create cluster --name my-cluster --region us-west-2 --nodegroup-name my-nodes --node-type c7i-flex.large --nodes 2 --nodes-min 1 --nodes-max 2   --managed
 
 Parameters
 Parameter
-Description
---name
-Cluster Name
---region
-AWS Region
---nodegroup-name
-Node Group Name
---node-type
-EC2 Instance Type
---nodes
-Desired Nodes
---nodes-min
-Minimum Nodes
---nodes-max
-Maximum Nodes
---managed
-Managed Node Group
+--name        Cluster Name 
+--region      AWS Region
+--nodegroup-name   Node Group Name
+--node-type   EC2 Instance Type
+--nodes       Desired Nodes
+--nodes-min   Minimum Nodes
+--nodes-max   Maximum Nodes
+--managed     Managed Node Group
 
 What Happens Behind the Scenes?
 EKS creates:
@@ -96,9 +79,7 @@ List clusters:
 eksctl get cluster---Update kubeconfig
 Configure kubectl to access the cluster.
 
-aws eks update-kubeconfig \
-  --region us-west-2 \
-  --name my-cluster      ----------Verify Kubernetes Access
+aws eks update-kubeconfig  --region us-west-2 --name my-cluster      ----------Verify Kubernetes Access
 Check nodes:
  kubectl get nodes
 
@@ -107,12 +88,15 @@ Check cluster info:
 kubectl cluster-info
 
 Useful kubectl Commands
+
 View nodes:
 
 kubectl get nodes
+
 View pods:
 
 kubectl get pods -A
+
 View namespaces:
 
 kubectl get ns
@@ -121,16 +105,15 @@ View services:
 kubectl get svc -A
 
 Deploy a Test Application
+
 Create deployment:
 
-kubectl create deployment nginx \
---image=nginx
+kubectl create deployment nginx --image=nginx
 
 Expose service:
 
-kubectl expose deployment nginx \
---type=LoadBalancer \
---port=80
+kubectl expose deployment nginx --type=LoadBalancer --port=80
+
 Check service:
 
 kubectl get svc
@@ -138,19 +121,15 @@ AWS will provision an Elastic Load Balancer automatically.
 
 Scale Deployment
 
-kubectl scale deployment nginx \
---replicas=3
+kubectl scale deployment nginx --replicas=3
+
 Verify:
 
 kubectl get pods
 
 Create Additional Node Group
 
-eksctl create nodegroup \
-  --cluster my-cluster \
-  --name app-nodes \
-  --node-type t3.medium \
-  --nodes 2
+eksctl create nodegroup --cluster my-cluster --name app-nodes --node-type t3.medium   --nodes 2
 
 Check:
 
@@ -159,9 +138,7 @@ kubectl get nodes
 Delete EKS Cluster
 When finished, delete all resources:
 
-eksctl delete cluster \
---name my-cluster \
---region us-west-2
+eksctl delete cluster --name my-cluster --region us-west-2
 
 This removes:
 	EKS Cluster 
@@ -170,30 +147,24 @@ This removes:
 	Security Groups 
 	CloudFormation Stacks 
 
-Troubleshooting  No Nodes Found
+
 
 kubectl get nodes
 If empty:
 
-aws eks update-kubeconfig \
---region us-west-2 \
---name my-cluster
+aws eks update-kubeconfig --region us-west-2 --name my-cluster
 
 Check Node Group
 
-eksctl get nodegroup \
---cluster my-cluster
+eksctl get nodegroup --cluster my-cluster
 
 Check Cluster Status
 
-aws eks describe-cluster \
---name my-cluster \
---query cluster.status
+aws eks describe-cluster --name my-cluster --query cluster.status
 
 Check Worker Node EC2 Instances
 
-aws ec2 describe-instances \
---filters "Name=tag:eks:cluster-name,Values=my-cluster"
+aws ec2 describe-instances --filters "Name=tag:eks:cluster-name,Values=my-cluster"
 
 
 Production Recommendations
