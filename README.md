@@ -38,7 +38,7 @@ A DaemonSet ensures that a copy of a specific pod runs on all or selected nodes 
 
 Replication Controllers and ReplicaSets ensure that the specified number of Pod replicas are running at all times.
 
-## List all pods
+### List all pods
 kubectl get pods
 
 ## List all deployments
