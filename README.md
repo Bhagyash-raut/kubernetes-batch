@@ -81,13 +81,18 @@ kube-public: For publicly accessible resources.
 
 ## Kubernetes Deployment Strategies
 Recreate Strategy
+	
 	• Terminates all existing pods before creating new ones.
+
 	• Suitable for non-critical updates.
+
 Rolling Update Strategy
 	• Updates pods incrementally.
 	• Ensures minimal downtime and availability during updates.
+
 Canary Deployment
 	• Deploys a small subset of new pods alongside existing ones to test the update.
+
 Blue-Green Deployment
 	• Creates a new set of pods ("blue") while the old set ("green") remains active, enabling a smooth transition.
 
@@ -96,6 +101,7 @@ Blue-Green Deployment
 
 Main Container
 The primary container that serves the main purpose of the application. Examples include application servers or web servers.
+
 Sidecar Container
 An auxiliary container that provides supporting functionalities, such as logging, monitoring, or proxying.
 	Examples:
