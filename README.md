@@ -120,6 +120,7 @@ The primary container that serves the main purpose of the application. Examples 
 
 Sidecar Container
 An auxiliary container that provides supporting functionalities, such as logging, monitoring, or proxying.
+	
 	Examples:
 		A logging container (e.g., Fluentd) that collects logs from the main container.
-A proxy container (e.g., Envoy) that manages network traffic.
+        A proxy container (e.g., Envoy) that manages network traffic.
