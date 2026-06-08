@@ -17,9 +17,7 @@ Check logs: kubectl logs batch-pod
 
 Method 2: Using a YAML Manifest
 
-Create a file named pod.yaml:
-
-
+Create a file named pod.yaml:  https://github.com/Bhagyash-raut/kubernetes-batch/blob/main/pod.yaml
 
 Apply the manifest: kubectl apply -f pod.yaml
 
