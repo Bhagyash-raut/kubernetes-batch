@@ -45,14 +45,14 @@ Kubernetes networking is fundamental for ensuring smooth communication between v
 Intra-Pod Communication
 	• Definition: Intra-pod communication refers to the communication between containers within the same pod.
 	• Mechanism: Containers in a pod share the same network namespace, which means they: 
-		○ Share the same IP address.
-		○ Can communicate directly using localhost and exposed container ports.
+		 Share the same IP address.
+		 Can communicate directly using localhost and exposed container ports.
 Inter-Pod Communication
 	• Definition: Inter-pod communication refers to the communication between pods.
 	• Mechanism: 
-		○ Kubernetes assigns each pod a unique IP address.
-		○ Pods communicate directly using these IP addresses or via Kubernetes services.
-		○ Kubernetes ensures a flat network model where all pods can communicate without NAT.
+		Kubernetes assigns each pod a unique IP address.
+		pods communicate directly using these IP addresses or via Kubernetes services.
+		Kubernetes ensures a flat network model where all pods can communicate without NAT.
 
 ## Kubernetes Service Types for Networking
 
