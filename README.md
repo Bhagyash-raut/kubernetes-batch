@@ -41,31 +41,31 @@ Replication Controllers and ReplicaSets ensure that the specified number of Pod 
 ### List all pods
 kubectl get pods
 
-## List all deployments
+### List all deployments
 kubectl get deployments
 
-## List all ReplicaSets
+### List all ReplicaSets
 kubectl get rs
 
-## List all StatefulSets
+### List all StatefulSets
 kubectl get statefulsets
 
-## List all DaemonSets
+### List all DaemonSets
 kubectl get daemonsets
 
-## Show all resources
+### Show all resources
 kubectl get all
 
-## Describe a pod
+### Describe a pod
 kubectl describe pod <pod-name>
 
-## View pod logs
+### View pod logs
 kubectl logs <pod-name>
 
-## Delete a pod
+### Delete a pod
 kubectl delete pod <pod-name>
 
-## Delete all resources in the current namespace
+### Delete all resources in the current namespace
 kubectl delete all --all
 
 
