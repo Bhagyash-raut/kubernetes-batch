@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: batch-statefulset
+spec:
+  serviceName: batch-service
+  replicas: 3
+  selector:
+    matchLabels:
+      app: batch
+  template:
+    metadata:
+      labels:
+        app: batch
+    spec:
+      containers:
+      - name: batch-container
+        image: bhagyash654/batch:v2
+        ports:
+        - containerPort: 80
