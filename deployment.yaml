@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: batch-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: batch
+  template:
+    metadata:
+      labels:
+        app: batch
+    spec:
+      containers:
+      - name: batch-container
+        image: bhagyash654/batch:v2
+        ports:
+        - containerPort: 80
