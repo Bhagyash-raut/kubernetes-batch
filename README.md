@@ -38,6 +38,37 @@ A DaemonSet ensures that a copy of a specific pod runs on all or selected nodes 
 
 Replication Controllers and ReplicaSets ensure that the specified number of Pod replicas are running at all times.
 
+# List all pods
+kubectl get pods
+
+# List all deployments
+kubectl get deployments
+
+# List all ReplicaSets
+kubectl get rs
+
+# List all StatefulSets
+kubectl get statefulsets
+
+# List all DaemonSets
+kubectl get daemonsets
+
+# Show all resources
+kubectl get all
+
+# Describe a pod
+kubectl describe pod <pod-name>
+
+# View pod logs
+kubectl logs <pod-name>
+
+# Delete a pod
+kubectl delete pod <pod-name>
+
+# Delete all resources in the current namespace
+kubectl delete all --all
+
+
 ## Kubernetes Networking: Intra-Pod and Inter-Pod Communication
 
 Kubernetes networking is fundamental for ensuring smooth communication between various components, including pods, services, and external clients. It provides flexible networking configurations for intra-pod and inter-pod communication.
