@@ -155,3 +155,56 @@ An auxiliary container that provides supporting functionalities, such as logging
 	Examples:
 		A logging container (e.g., Fluentd) that collects logs from the main container.
         A proxy container (e.g., Envoy) that manages network traffic.
+
+
+## Kubernetes ConfigMap and Secret
+
+A ConfigMap is a Kubernetes resource used to store non-confidential data as key-value pairs. It helps decouple configuration data from application code.
+A Secret is a Kubernetes resource designed to store confidential data, such as passwords or API keys, in a secure and encoded format. Secrets are encoded using Base64 , providing a layer of obfuscation but not encryption.
+Why Use ConfigMap and Secret?
+	Separation of Concerns: Decouples configuration from application logic.
+	Ease of Updates: Configuration changes do not require rebuilding or redeploying applications.
+	Security: Secrets ensure sensitive data is handled securely.
+
+Practical Steps
+Step 1: Create the ConfigMap
+Manifest File
+Save the following content in a file named configmap.yaml:  https://github.com/Bhagyash-raut/kubernetes-batch/blob/main/ConfigMap.yaml
+
+Run the following command to create the ConfigMap in your cluster: kubectl apply -f configmap.yaml
+Verify the ConfigMap
+View the created ConfigMap: kubectl get configmap  my-vars  -o yaml
+
+Step 2: Create the Secret
+Manifest File
+Save the following content in a file named secret.yaml:  
+Apply the Secret
+Run the following command to create the Secret in your cluster: kubectl apply -f secret.yaml
+
+Verify the Secret
+To check the Secret:
+kubectl get secret my-sec -o yaml
+Note: The values will appear base64-encoded. To decode, use:
+echo "QWRtaW4=" | base64 --decode
+
+Step 3: Using ConfigMap and Secret in a Pod
+Example Pod Manifest
+Create a file named pod-with-config-and-secret.yaml with the following content: https://github.com/Bhagyash-raut/kubernetes-batch/blob/main/ConfigMap-and-Secret-ina-Pod.yaml
+
+Apply the Pod Manifest
+kubectl apply -f pod-with-config-and-secret.yaml
+
+Verify the Pod Environment Variables
+kubectl exec -it  pod-with-config-secret -- printenv | grep DB_
+##Notes and Best Practices
+ConfigMap Notes
+	Non-Confidential Data: ConfigMaps should not store sensitive data.
+	Dynamic Updates: ConfigMaps can be updated dynamically, and changes can reflect in running Pods if the configuration is mounted as a volume.
+	Avoid Overloading: Use ConfigMaps for lightweight configurations to prevent complexity.
+Secret Notes
+	Secure Handling: Avoid storing Secrets in plain text files. Use tools like kubectl to manage them.
+	Encryption: Enable encryption at rest for Secrets in your cluster for additional security.
+	Access Control: Use RBAC to restrict access to Secrets.
+
+
+
