@@ -201,7 +201,7 @@ Verify the Pod Environment Variables
 
 kubectl exec -it  pod-with-config-secret -- printenv | grep DB_
 
-##Notes and Best Practices
+## Notes and Best Practices
 
 ConfigMap Notes
 	
