@@ -198,10 +198,12 @@ Verify the Pod Environment Variables
 kubectl exec -it  pod-with-config-secret -- printenv | grep DB_
 ##Notes and Best Practices
 ConfigMap Notes
+	
 	Non-Confidential Data: ConfigMaps should not store sensitive data.
 	Dynamic Updates: ConfigMaps can be updated dynamically, and changes can reflect in running Pods if the configuration is mounted as a volume.
 	Avoid Overloading: Use ConfigMaps for lightweight configurations to prevent complexity.
 Secret Notes
+	
 	Secure Handling: Avoid storing Secrets in plain text files. Use tools like kubectl to manage them.
 	Encryption: Enable encryption at rest for Secrets in your cluster for additional security.
 	Access Control: Use RBAC to restrict access to Secrets.
