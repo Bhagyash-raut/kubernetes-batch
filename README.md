@@ -192,11 +192,15 @@ Example Pod Manifest
 Create a file named pod-with-config-and-secret.yaml with the following content: https://github.com/Bhagyash-raut/kubernetes-batch/blob/main/ConfigMap-and-Secret-ina-Pod.yaml
 
 Apply the Pod Manifest
+
 kubectl apply -f pod-with-config-and-secret.yaml
 
 Verify the Pod Environment Variables
+
 kubectl exec -it  pod-with-config-secret -- printenv | grep DB_
+
 ##Notes and Best Practices
+
 ConfigMap Notes
 	
 	Non-Confidential Data: ConfigMaps should not store sensitive data.
