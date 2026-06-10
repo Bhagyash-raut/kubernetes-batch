@@ -1,0 +1,249 @@
+(1 Master + 1 Worker)
+This is a production-style Kubernetes setup.
+## Architecture
+
+     +---------------------+
+ |      Control Plane Node      |
+ |      (Master Node)           |
+      +---------------------+
+                 |
+                 |  
+      +---------------------+
+   |       Worker Node        |
+      +---------------------+
+
+##Prerequisites
+Create 2 EC2 instances:
+Node     Master              Worker  
+Type    c7i.flex.large     t3.medium
+
+Security Group
+Allow:
+Port        Protocol     Purpose
+22           TCP           SSH
+6443         TCP       Kubernetes API
+2379-2380    TCP          etcd
+10250        TCP         Kubelet
+10257        TCP       Controller Manager
+10259        TCP        Scheduler
+30000-32767  TCP      NodePort Services
+For learning, you can temporarily allow all traffic between the two instances' security groups.
+
+Step 1: Run on BOTH Master and Worker Nodes
+Update System
+sudo dnf update -y
+
+Disable Swap
+Check swap:
+free -h
+
+Disable: sudo swapoff -a
+
+Make permanent:
+sudo sed -i '/swap/d' /etc/fstab
+
+Verify:
+swapon --show   ------ No output should appear.
+
+Configure Kernel Modules
+
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+overlay
+br_netfilter
+EOF
+
+Load modules:
+sudo modprobe overlay
+sudo modprobe br_netfilter
+
+Configure Networking
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+EOF
+
+Apply:
+sudo sysctl --system
+Verify:
+sysctl net.ipv4.ip_forward
+
+Expected:
+net.ipv4.ip_forward = 1
+
+
+Step 2: Install Container Runtime (containerd)
+Run on BOTH nodes.
+Install:
+sudo dnf install containerd -y
+
+Create configuration:
+sudo mkdir -p /etc/containerd
+containerd config default | sudo tee /etc/containerd/config.toml
+
+Enable Systemd Cgroup
+
+Edit:
+sudo vi /etc/containerd/config.toml
+
+Find:
+SystemdCgroup = false
+
+Change to:
+SystemdCgroup = true
+
+Save and exit.
+
+Start service:
+sudo systemctl enable containerd
+sudo systemctl restart containerd
+
+Check:
+sudo systemctl status containerd
+
+Step 3: Install Kubernetes Packages
+Run on BOTH nodes.
+
+Add Kubernetes repository:
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.33/rpm/
+enabled=1
+gpgcheck=1
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.33/rpm/repodata/repomd.xml.key
+EOF
+
+
+Install packages:
+sudo dnf install -y kubelet kubeadm kubectl
+
+Enable kubelet:
+sudo systemctl enable kubelet
+
+Verify:
+kubeadm version
+kubectl version --client
+
+Step 4: Initialize Master Node
+Run ONLY on MASTER.
+Find private IP:
+hostname -I
+
+Example:  172.31.10.100
+
+Initialize cluster:
+
+sudo kubeadm init \
+--pod-network-cidr=192.168.0.0/16
+Wait 2–5 minutes.
+
+Configure kubectl for ec2-user
+
+After successful initialization:
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Verify:
+
+kubectl get nodes
+Output:
+  NAME          STATUS 
+  k8s-master    NotReady
+This is expected until a network plugin is installed.
+
+Step 5: Install Calico Network Plugin
+Run on MASTER.
+Apply Calico:
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.0/manifests/calico.yaml
+
+Check pods:
+
+kubectl get pods -A
+Wait until all pods are Running.
+
+Check node:
+kubectl get nodes
+
+Expected:
+
+NAME          STATUS
+k8s-master    Ready
+
+Step 6: Join Worker Node
+On MASTER, get join command:
+
+kubeadm token create --print-join-command
+Example output:
+
+kubeadm join 172.31.10.100:6443 --token abcdef.1234567890abcdef --discovery-token-ca-cert-hash sha256:xxxxxxxx
+Copy the entire command.
+
+Run Join Command on WORKER
+SSH into worker node.
+
+Run:
+
+sudo kubeadm join 172.31.10.100:6443 --token abcdef.1234567890abcdef --discovery-token-ca-cert-hash sha256:xxxxxxxx
+
+Expected:
+
+This node has joined the cluster
+
+Step 7: Verify Worker Joined
+
+On MASTER:
+
+kubectl get nodes
+Expected:
+
+NAME           STATUS
+k8s-master     Ready
+k8s-worker1    Ready
+kubectl label node ip-172-31-15-86.ap-south-1.compute.internal  noderole.kubernetes.io/worker=worker
+
+Step 8: Deploy First Application
+Create deployment:
+kubectl create deployment nginx --image=bhagyash654/batch:v2
+
+Scale deployment:
+kubectl scale deployment nginx --replicas=3
+
+Check pods:
+kubectl get pods -o wide
+
+Example:
+
+NAME                    NODE
+nginx-xxx               k8s-worker1
+nginx-yyy               k8s-master
+nginx-zzz               k8s-worker1
+Pods will be distributed across nodes.
+
+Step 9: Expose Application
+
+kubectl expose deployment nginx --port=80 --target-port=80 --type=NodePort
+
+Check:
+kubectl get svc
+
+Example:
+nginx   NodePort   80:31245/TCP
+
+Access:
+http://<Worker-Public-IP>:31245
+
+or
+
+http://<Master-Public-IP>:31245
+
+Important Troubleshooting Commands
+
+Check Nodes : kubectl get nodes
+Check Pods  : kubectl get pods -A
+Describe Node  : kubectl describe node k8s-worker1
+View Logs : kubectl logs <pod-name>
+Check Kubelet : sudo systemctl status kubelet
+Check Containerd : sudo systemctl status containerd
