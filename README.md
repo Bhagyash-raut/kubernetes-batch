@@ -214,5 +214,141 @@ Secret Notes
 	Encryption: Enable encryption at rest for Secrets in your cluster for additional security.
 	Access Control: Use RBAC to restrict access to Secrets.
 
+## Kubernetes Persistent Volumes
+Kubernetes Persistent Volumes (PV) and Persistent Volume Claims (PVC) with Dynamic Volumes (EBS)
+
+A volume is a storage location attached to a Pod.
+
+      +----------------------+
+    |          Pod             | 
+    |                          |
+    |  +------------------+    |
+    |  |   Container      |    |
+    |  +------------------+    |
+    |         |                |
+    |         | Mount          |
+    |         V                |
+    | +------------------+     |
+    | |     Volume        |    |
+    | +------------------+     |
+      +----------------------+
+A volume lives as long as the Pod exists.
+
+1. emptyDir Volume
+Created when Pod starts.
+Deleted when Pod is removed.
+URL: https://github.com/Bhagyash-raut/kubernetes-batch/blob/main/emptyDir.yaml
+Example
+Real-time Scenario
+Pod with:
+	• Main container writes logs 
+	• Sidecar container reads logs 
+
+       emptyDir
+          |
+          +---- Shared between containers
+
+2. hostPath Volume
+Mounts a directory from Kubernetes node.
+URL:  https://github.com/Bhagyash-raut/kubernetes-batch/blob/main/hostPath.yaml
+Container accesses same directory.
+
+       Node
+        |
+        +-- /data/app
+         |
+         +-- Mounted into Pod
+Drawback
+If Pod moves to another node:
+
+Node1 → Data Exists
+Node2 → Data Missing
+Not recommended for production.
+
+## Kubernetes Persistent Volumes (PV), Persistent Volume Claims (PVC), and dynamic provisioning using AWS Elastic Block Store (EBS).
+
+## Persistent Volume (PV)
+A Persistent Volume is a storage resource in a Kubernetes cluster that provides persistent storage, independent of Pod lifecycles. It is defined and managed by the cluster administrator.
+
+## Persistent Volume Claim (PVC)
+A Persistent Volume Claim is a request for storage by a user. Pods use PVCs to access PVs.
+
+### Dynamic Provisioning
+Dynamic provisioning automatically creates PVs based on a PVC when a StorageClass is specified. This is particularly useful for cloud-based storage systems like AWS EBS.
+
+What is Dynamic Provisioning?
+Dynamic provisioning automatically creates storage volumes when a PVC (PersistentVolumeClaim) is created.
+a. Without dynamic provisioning:
+
+    Admin creates PV manually
+      ↓
+    User creates PVC
+      ↓
+    PVC binds to existing PV
+Step 1: Create Persistent Volume
+URL : https://github.com/Bhagyash-raut/kubernetes-batch/blob/main/pv.yaml
+Apply: kubectl apply -f pv.yaml
+Verify: kubectl get pv
+
+Apply: kubectl apply -f pvc.yaml
+Verify: kubectl get pvc
+
+Step 3: Create Pod Using PVC
+URL : https://github.com/Bhagyash-raut/kubernetes-batch/blob/main/pod-pv.yaml
+
+Apply: kubectl apply -f pod.yaml
+Verify: kubectl get pods
+
+Step 4: Write Data Inside Pod
+Enter Pod: kubectl exec -it nginx-pod -- bash
+
+Create file: echo "Hello Kubernetes PV" > /usr/share/nginx/html/index.html
+
+Exit:
+
+exit
+
+Step 5: Verify Data on Node
+Login to worker node where pod is running.
+Check: sudo ls /data/k8s
+Expected: index.html
+View content: cat /data/k8s/index.html
+Output:
+Hello Kubernetes PV
+Step 6: Delete Pod : kubectl delete pod nginx-pod
+Check file still exists:
+cat /data/k8s/index.html
+Output:
+Hello Kubernetes PV
+The pod is deleted, but the data remains because it is stored in the PV.
+
+Important Commands
+Check PV:  kubectl get pv
+Check PVC: kubectl get pvc
+Describe PV:  kubectl describe pv my-pv
+Describe PVC: kubectl describe pvc my-pvc
+Check mounted volumes: kubectl describe pod nginx-pod
+
+Why do we need PVC?
+Without PVC:
+          Pod → Directly uses PV
+          This is not flexible.
+With PVC:
+          Pod → PVC → PV
+The pod only requests storage; Kubernetes automatically binds it to a matching PV.
+
+b. With dynamic provisioning:
+
+    User creates PVC
+      ↓
+    StorageClass triggers provisioner
+      ↓
+    PV created automatically
+      ↓
+    PVC binds to new PV
+
+
+
+
 
 
