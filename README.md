@@ -309,25 +309,37 @@ Exit:
 exit
 
 Step 5: Verify Data on Node
+
 Login to worker node where pod is running.
+
 Check: sudo ls /data/k8s
+
 Expected: index.html
+
 View content: cat /data/k8s/index.html
+
 Output:
 Hello Kubernetes PV
+
 Step 6: Delete Pod : kubectl delete pod nginx-pod
 Check file still exists:
 cat /data/k8s/index.html
+
 Output:
 Hello Kubernetes PV
 The pod is deleted, but the data remains because it is stored in the PV.
 
 Important Commands
 Check PV:  kubectl get pv
+
 Check PVC: kubectl get pvc
+
 Describe PV:  kubectl describe pv my-pv
+
 Describe PVC: kubectl describe pvc my-pvc
+
 Check mounted volumes: kubectl describe pod nginx-pod
+
 
 Why do we need PVC?
 Without PVC:
