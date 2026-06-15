@@ -359,7 +359,36 @@ b. With dynamic provisioning:
       ↓
     PVC binds to new PV
 
+## Ingress Controller
+An Ingress Controller is a key component in Kubernetes that implements the functionality of an Ingress resource. While the Ingress resource defines the rules for routing HTTP/HTTPS traffic to different services inside a Kubernetes cluster, the Ingress Controller is the actual component that enforces these rules and processes the external traffic.
 
+How Traffic Flows
+
+• The Client: A user visits https://example.com.
+
+• Cloud Load Balancer: The external DNS routes the request to an external network load balancer provisioned by your cloud provider.
+
+• Ingress Controller: The load balancer sends the traffic directly to the Ingress Controller pod.
+
+• Rule Matching: The controller reads the incoming HTTP header and checks its synchronized routing rules.
+
+• Target Service & Pod: The controller bypasses the standard service cluster IP and proxies the request directly to an active pod backend
+
+Key Capabilities
+
+• Path-Based Routing: Directs ://example.com to your API service and ://example.com to your checkout service.
+
+• Host-Based Routing: Routes traffic based on domain names, such as sending ://domain.com and ://domain.com to completely different destinations.
+
+• SSL/TLS Termination: Handles SSL decryption at the entry point so your backend application pods do not have to process cryptography.
+
+• Centralized Configuration: Automatically updates internal routing tables whenever pods scale up, down, or crash without needing a configuration restart
+
+Popular Controller Options
+• Traefik: An HTTP reverse proxy that features strong dynamic configuration and native dashboard support.
+
+• Kong: Built on NGINX, specialized for API Gateway duties, authentication plugins, and rate limiting.
+Cloud-Native Controllers: Options like the AWS ALB Ingress Controller directly manage managed cloud hardware rather than running proxy pods inside the node worker spaces. 
 
 
 
