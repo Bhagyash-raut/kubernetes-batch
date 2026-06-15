@@ -388,6 +388,7 @@ Popular Controller Options
 • Traefik: An HTTP reverse proxy that features strong dynamic configuration and native dashboard support.
 
 • Kong: Built on NGINX, specialized for API Gateway duties, authentication plugins, and rate limiting.
+
 Cloud-Native Controllers: Options like the AWS ALB Ingress Controller directly manage managed cloud hardware rather than running proxy pods inside the node worker spaces. 
 
 
