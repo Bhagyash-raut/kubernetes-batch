@@ -393,5 +393,48 @@ An Ingress Controller is a key component in Kubernetes that implements the funct
 Cloud-Native Controllers: Options like the AWS ALB Ingress Controller directly manage managed cloud hardware rather than running proxy pods inside the node worker spaces. 
 
 
+## Horizontal Pod Autoscaler (HPA)
+HPA automatically increases or decreases the number of pod replicas based on resource utilization such as CPU or memory.
+Advantages
+
+	• Automatic scaling
+	• Improves application availability
+	• Optimizes resource usage
+	• Easy to configure
+Limitations
+
+	• Requires Metrics Server
+	• Cannot change CPU or memory limits
+	• Cannot scale to zero pods
+## Vertical Pod Autoscaler (VPA)
+VPA automatically adjusts the CPU and memory requests/limits of a pod instead of changing the number of replicas.
+Advantages
+
+	• Optimizes resource allocation
+	• Reduces over-provisioning
+	• Useful for applications that cannot easily scale horizontally
+Limitations
+
+	• May restart pods to apply new resource settings
+	• Does not increase the number of pods
+## KEDA (Kubernetes Event-Driven Autoscaling)
+KEDA scales applications based on external events, not just CPU or memory.
+It can monitor systems like:
+
+	• Apache Kafka
+	• AWS SQS
+	• Azure Service Bus
+	• Redis
+	• Prometheus
+	• Cron schedules
+Advantages
+	• Event-driven autoscaling
+	• Supports many external systems
+	• Can scale workloads from 0 to N replicas
+	• Saves infrastructure costs during idle periods
+Limitations
+	• Requires installing KEDA components
+    • Depends on external event sources and triggers
+
 
 
