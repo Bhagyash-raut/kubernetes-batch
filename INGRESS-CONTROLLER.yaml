@@ -65,6 +65,7 @@ hostname => Load balancer Endpoint URL
 # Create Ingress
 vim vproingress.yaml
 
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress
