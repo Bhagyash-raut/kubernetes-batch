@@ -1,0 +1,128 @@
+Horizontal Pod Autoscaler (HPA)
+Step 1: Prerequisites
+Ensure the Kubernetes Metrics Server is installed:
+kubectl get deployment metrics-server -n kube-system
+
+Deploy an application (e.g., nginx) with resource requests and limits defined.
+
+Step 2: Create a Deployment
+
+Manifest File
+Save the following content in a file named deployment.yaml:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student-app-frontend
+  labels:
+    app: student-app-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: student-app-frontend
+  template:
+    metadata:
+      labels:
+        app: student-app-frontend
+    spec:
+      containers:
+        - name: student-app-container
+          image: bhagyash654/batch:v4
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 200m
+              memory: 100M
+            limits:
+              cpu: 500m
+
+
+Apply the Deployment
+kubectl apply -f deployment.yaml
+
+Step 3: Create the Horizontal Pod Autoscaler
+
+Manifest File
+Save the following content in a file named hpa.yaml:
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: student-app-frontend-hpa
+  labels:
+    app: student-app-frontend
+spec:
+  scaleTargetRef:
+      apiVersion: apps/v1
+      kind: Deployment
+      name: student-app-frontend
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 30
+
+Apply the HPA
+kubectl apply -f hpa.yaml
+
+Step 4: Verify the HPA
+	
+Check the HPA status:
+kubectl get hpa
+
+Ingress yaml
+
+kubectl expose deployment student-app-frontend --port=80 --target-port=80  --type=LoadBalancer --name=my-load-balancer
+Save the following content in a file named Ingress.yaml:
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: student-app-ing
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: 
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: student-app-frontend-svc
+              port:
+                number: 80
+
+Service yaml
+
+Save the following content in a file named service.yaml:
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: student-app-frontend-svc
+  labels:
+    app: student-app-frontend
+spec:
+  selector:
+    app: student-app-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
+
+Simulate a load test to trigger scaling:
+kubectl run -i  --tty load-generator   --image=busybox   --restart=Never --/bin/sh -c "while true; do wget -q -O- http://<cluster-ip> ; done"
+	
+Observe the scaling behavior:
+kubectl get pods -w
+              memory: 200M
+
