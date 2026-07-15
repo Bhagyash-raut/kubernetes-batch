@@ -59,8 +59,7 @@ spec:
     image: nginx
     volumeMounts:
     - mountPath: /data
-      name: myvolume
-     
+      name: myvolume   
   volumes:
 - name: host-volume
   hostPath:
@@ -72,6 +71,7 @@ volumeMounts:
 - mountPath: /appdata
   name: host-volume
 Real-time Scenario
+
 Node has:
 
 /data/app
@@ -82,6 +82,7 @@ Node
  +-- /data/app
         |
         +-- Mounted into Pod
+
 Drawback
 If Pod moves to another node:
 
@@ -106,19 +107,21 @@ What is Dynamic Provisioning?
 Dynamic provisioning automatically creates storage volumes when a PVC (PersistentVolumeClaim) is created.
 Without dynamic provisioning:
 
-Admin creates PV manually
+
+
+     Admin creates PV manually
       ↓
-User creates PVC
+     User creates PVC
       ↓
-PVC binds to existing PV
+    PVC binds to existing PV
 
 With dynamic provisioning:
 
-User creates PVC
+     User creates PVC
       ↓
-StorageClass triggers provisioner
+     StorageClass triggers provisioner
       ↓
-PV created automatically
+    PV created automatically
       ↓
 PVC binds to new PV
 
@@ -146,6 +149,7 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: /data/k8s
+
 Apply:
 
 kubectl apply -f pv.yaml
@@ -175,8 +179,8 @@ spec:
 
 Apply:
 kubectl apply -f pvc.yaml
-Verify:
 
+Verify:
 kubectl get pvc
 Expected:
 
@@ -204,17 +208,14 @@ spec:
     volumeMounts:
     - mountPath: /usr/share/nginx/html
       name: my-storage
-
   volumes:
   - name: my-storage
     persistentVolumeClaim:
       claimName: my-pvc
 
 Apply:
-
 kubectl apply -f pod.yaml
 Verify:
-
 kubectl get pods
 
 Step 4: Write Data Inside Pod
@@ -275,6 +276,7 @@ The pod only requests storage; Kubernetes automatically binds it to a matching P
 
 2. Practical Steps
 Step 1: Create a StorageClass for AWS EBS
+
 Manifest File
 Save the following content in a file named storageclass.yaml:
 
@@ -469,22 +471,21 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: nginx-pvc
-
 spec:
   accessModes:
   - ReadWriteOnce
-
   storageClassName: ebs-gp3
-
   resources:
     requests:
       storage: 5Gi
+
 Apply:
 
 kubectl apply -f pvc.yaml
 Verify:
 
 kubectl get pvc
+
 Output:
 
 NAME        STATUS
@@ -500,35 +501,29 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx
-
 spec:
   replicas: 1
-
   selector:
     matchLabels:
       app: nginx
-
   template:
     metadata:
       labels:
         app: nginx
-
     spec:
       containers:
       - name: nginx
         image: nginx
-
         ports:
         - containerPort: 80
-
         volumeMounts:
         - name: web-storage
           mountPath: /usr/share/nginx/html
-
       volumes:
       - name: web-storage
         persistentVolumeClaim:
           claimName: nginx-pvc
+
 Apply:
 
 kubectl apply -f nginx-deploy.yaml
@@ -856,31 +851,20 @@ Add:
 
 apiVersion: v1
 kind: Pod
-
 metadata:
   name: ebs-test-pod
-
 spec:
-
   containers:
-
   - name: nginx
-
     image: nginx
-
     volumeMounts:
-
     - name: ebs-storage
       mountPath: /data
-
-
   volumes:
-
   - name: ebs-storage
-
     persistentVolumeClaim:
-
       claimName: ebs-pvc
+
 Apply:
 
 kubectl apply -f ebs-test-pod.yaml
@@ -911,19 +895,15 @@ Create StorageClass:
 
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
-
 metadata:
   name: ebs-gp3-retain
-
 provisioner: ebs.csi.aws.com
-
 reclaimPolicy: Retain
-
 volumeBindingMode: WaitForFirstConsumer
-
 parameters:
   type: gp3
   encrypted: "true"
+
 
 Retain behavior
 
